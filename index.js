@@ -8,7 +8,6 @@ app.use(express.json());
 
 //Rotas//
 
-
 //CREATE cliente
 
 app.post("/clientes", async (req, res) => {
@@ -62,7 +61,32 @@ app.get("/clientes", async (req, res) => {
         const allClientes = await pool.query("SELECT * FROM clientes");
 
         //JSON resposta para o client-side
-        res.json(allClientes.rows);
+        if (allClientes.rowCount < 1) {
+            res.json({});
+        }
+        else {
+            res.json(allClientes.rows);
+        }
+    } catch (err) {
+        console.error(err.message);
+    }
+});
+
+//Retornar todos os animais
+
+app.get("/animais", async (req, res) => {
+    try {
+        //função do PG QUERY para pegar todos registros de uma tabela
+        const allAnimais = await pool.query("SELECT * FROM animais");
+
+        //JSON resposta para o client-side
+        //JSON resposta para o client-side
+        if (allAnimais.rowCount < 1) {
+            res.json({});
+        }
+        else {
+            res.json(allAnimais.rows);
+        }
     } catch (err) {
         console.error(err.message);
     }
@@ -89,32 +113,108 @@ app.get("/clientes/:cpf", async (req, res) => {
     }
 });
 
-//update a todo
+//update cliente
 
-app.put("/todos/:id", async (req, res) => {
+app.put("/clientes/:id", async (req, res) => {
     try {
         const { id } = req.params;
-        const { description } = req.body;
-        const updateTodo = await pool.query(
-            "UPDATE todo SET description = $1 WHERE todo_id = $2",
-            [description, id]
+        const myJson = req.body;
+        console.log(id);
+        console.log(myJson);
+
+        //update nome
+        const updateClienteNome = await pool.query(
+            "UPDATE clientes SET nome = $1 WHERE id = $2",
+            [myJson.nome, id]
+        );
+        //update telefone
+        const updateClienteTelefone = await pool.query(
+            "UPDATE clientes SET telefone = $1 WHERE id = $2",
+            [myJson.telefone, id]
+        );
+        //update endereço
+        const updateClienteEndereco = await pool.query(
+            "UPDATE clientes SET endereco = $1 WHERE id = $2",
+            [myJson.endereco, id]
         );
 
-        res.json("Todo was updated!");
+        res.json("Cliente Atualizado!");
     } catch (err) {
         console.error(err.message);
+        res.json("Cliente Não-Atualizado!");
     }
 });
 
-//delete a todo
+//update animal
 
-app.delete("/todos/:id", async (req, res) => {
+app.put("/animais/:id", async (req, res) => {
     try {
         const { id } = req.params;
-        const deleteTodo = await pool.query("DELETE FROM todo WHERE todo_id = $1", [
-            id
-        ]);
-        res.json("Todo was deleted!");
+        const myJson = req.body;
+        console.log(id);
+        console.log(myJson);
+
+        //update nome
+        const updateAnimalNome = await pool.query(
+            "UPDATE animais SET nome = $1 WHERE id = $2",
+            [myJson.nome, id]
+        );
+        //update idade
+        const updateAnimalIdade = await pool.query(
+            "UPDATE animais SET idade = $1 WHERE id = $2",
+            [myJson.idade, id]
+        );
+        //update peso
+        const updateAnimalPeso = await pool.query(
+            "UPDATE animais SET peso = $1 WHERE id = $2",
+            [myJson.peso, id]
+        );
+        //update tipo
+        const updateAnimalTipo = await pool.query(
+            "UPDATE animais SET tipo = $1 WHERE id = $2",
+            [myJson.tipo, id]
+        );
+        //update raca
+        const updateAnimalRaca = await pool.query(
+            "UPDATE animais SET raca = $1 WHERE id = $2",
+            [myJson.raca, id]
+        );
+
+        res.json("Animal Atualizado!");
+    } catch (err) {
+        console.error(err.message);
+        res.json("Animal Não-Atualizado!");
+    }
+});
+
+//delete animal
+
+app.delete("/animais/:id", async (req, res) => {
+    try {
+        const { id } = req.params;
+        const deleteAnimal = await pool.query("DELETE FROM animais WHERE id = $1", [id]);
+        res.json("Animal Deletado!");
+    } catch (err) {
+        console.log(err.message);
+    }
+});
+
+//delete cliente
+
+app.delete("/clientes/:cpf", async (req, res) => {
+    try {
+        const { cpf } = req.params;
+        const animaisPendentes = await pool.query("SELECT animais.nome FROM animais INNER JOIN clientes ON cpf = cpfdono Where cpf = $1;", [cpf]);
+        console.log("cpf: " + cpf + " possui: " + animaisPendentes.rowCount + " animais");
+
+
+        if(animaisPendentes.rowCount < 1){
+            const deleteCliente = await pool.query("DELETE FROM clientes WHERE cpf = $1", [cpf]);
+            res.json("Cliente Deletado!");
+        }
+        else{
+            res.json("Há animais cadastrados com esse cliente, delete-os!");
+        }
     } catch (err) {
         console.log(err.message);
     }
@@ -123,3 +223,6 @@ app.delete("/todos/:id", async (req, res) => {
 app.listen(5000, () => {
     console.log("server has started on port 5000");
 });
+
+
+
