@@ -22,7 +22,7 @@ app.post("/clientes", async (req, res) => {
             [newClient.nomeCliente, newClient.telefoneCliente, newClient.enderecoCliente, newClient.cpfCliente]
         );
 
-        res.json({});
+        res.json("Cliente Inserido");
 
     } catch (err) {
         console.error(err.message);
@@ -43,7 +43,7 @@ app.post("/animais", async (req, res) => {
             newAnimal.racaAnimal, newAnimal.cpfDono]
         );
 
-        res.json({});
+        res.json("Animal Inserido");
 
     } catch (err) {
         console.error(err.message);
@@ -65,6 +65,7 @@ app.get("/clientes", async (req, res) => {
             res.json({});
         }
         else {
+            console.log(allClientes.rows);
             res.json(allClientes.rows);
         }
     } catch (err) {
