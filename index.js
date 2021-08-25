@@ -62,7 +62,7 @@ app.get("/clientes", async (req, res) => {
 
         //JSON resposta para o client-side
         if (allClientes.rowCount < 1) {
-            res.json({});
+            res.json([]);
         }
         else {
             console.log(allClientes.rows);
@@ -83,7 +83,7 @@ app.get("/animais", async (req, res) => {
         //JSON resposta para o client-side
         //JSON resposta para o client-side
         if (allAnimais.rowCount < 1) {
-            res.json({});
+            res.json([]);
         }
         else {
             res.json(allAnimais.rows);
